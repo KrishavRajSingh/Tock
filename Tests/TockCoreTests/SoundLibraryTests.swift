@@ -2,23 +2,41 @@ import Testing
 @testable import TockCore
 
 @Suite struct SoundLibraryTests {
-    @Test func hasSixteenSoundsFourPerFamily() {
-        #expect(SoundLibrary.sounds.count == 16)
-        #expect(SoundFamily.allCases.count == 4)
+    @Test func hasTwentyEightSoundsFourPerFamily() {
+        #expect(SoundLibrary.sounds.count == 28)
+        #expect(SoundFamily.allCases.count == 7)
         for family in SoundFamily.allCases {
             #expect(SoundLibrary.sounds(in: family).count == 4)
         }
     }
 
     @Test func idsAndNamesAreUnique() {
-        #expect(Set(SoundLibrary.sounds.map(\.id)).count == 16)
-        #expect(Set(SoundLibrary.sounds.map(\.name)).count == 16)
+        #expect(Set(SoundLibrary.sounds.map(\.id)).count == 28)
+        #expect(Set(SoundLibrary.sounds.map(\.name)).count == 28)
     }
 
     @Test func mechanicalFamilyHasTheFourSwitches() {
         #expect(SoundLibrary.sounds(in: .mechanical).map(\.id) == [
             "mechanical.blue", "mechanical.brown", "mechanical.red", "mechanical.thock",
         ])
+    }
+
+    @Test func keyboardFamiliesHoldTheirSounds() {
+        #expect(SoundLibrary.sounds(in: .custom).map(\.id) == [
+            "custom.black", "custom.jade", "custom.panda", "custom.cream",
+        ])
+        #expect(SoundLibrary.sounds(in: .vintage).map(\.id) == [
+            "vintage.spring", "vintage.alps", "vintage.typewriter", "vintage.teletype",
+        ])
+        #expect(SoundLibrary.sounds(in: .quiet).map(\.id) == [
+            "quiet.topre", "quiet.silent", "quiet.laptop", "quiet.membrane",
+        ])
+    }
+
+    @Test func soundIDsStartWithTheirFamily() {
+        for sound in SoundLibrary.sounds {
+            #expect(sound.id.hasPrefix(sound.family.rawValue.lowercased() + "."), "\(sound.id)")
+        }
     }
 
     @Test func defaultSoundIsFirstDeskSound() {

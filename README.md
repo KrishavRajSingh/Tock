@@ -2,8 +2,9 @@
 
 Tock is a macOS app that plays a sound every time you click the mouse,
 and optionally a soft tick as you scroll and a sound as you type.
-The sounds are synthesized in code: 16 of them, in four families (Desk, Analog,
-Toybox, Mechanical). It is free and open source.
+The sounds are synthesized in code: 28 of them, in seven families (Desk, Analog,
+Toybox, and four of keyboards: Mechanical, Custom, Vintage, Quiet). It is free
+and open source.
 
 Opening Tock shows a small window for picking a sound and setting the volume.
 Closing the window leaves Tock running; the same controls stay in the menu bar,

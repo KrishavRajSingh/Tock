@@ -1,8 +1,12 @@
+/// The families, in the order they are listed.
 public enum SoundFamily: String, CaseIterable, Sendable {
     case desk = "Desk"
+    case mechanical = "Mechanical"
+    case custom = "Custom"
+    case vintage = "Vintage"
+    case quiet = "Quiet"
     case analog = "Analog"
     case toybox = "Toybox"
-    case mechanical = "Mechanical"
 }
 
 public struct Sound: Identifiable, Equatable, Sendable {
@@ -191,5 +195,119 @@ public enum SoundLibrary {
                 .noise(gain: 2.5, decay: 0.0025, filter: .bandpass(2000, q: 1)),
             ],
             duration: 0.09, gain: 0.85, seed: 16)),
+
+        // Custom: switches from enthusiast builds.
+        // Black is a heavy linear: one firm, bright bottom-out.
+        Sound(id: "custom.black", name: "Black", family: .custom, press: SoundRecipe(
+            layers: [
+                .noise(gain: 3.5, decay: 0.003, filter: .bandpass(2600, q: 1.5)),
+                .sine(1900, gain: 0.5, decay: 0.003),
+                .sine(240, gain: 0.03, decay: 0.008, pitchEnd: 0.8),
+            ],
+            duration: 0.07, gain: 0.75, seed: 17)),
+        // Jade has a click bar: a thicker, louder click than Blue.
+        Sound(id: "custom.jade", name: "Jade", family: .custom, press: SoundRecipe(
+            layers: [
+                .noise(gain: 2.0, decay: 0.001, filter: .highpass(5000)),
+                .sine(4200, gain: 0.9, decay: 0.0018),
+                .sine(2700, gain: 0.5, decay: 0.0025),
+                .noise(gain: 2.5, decay: 0.0025, filter: .bandpass(2400, q: 1.5), delay: 0.008),
+                .sine(320, gain: 0.06, decay: 0.008, delay: 0.008),
+            ],
+            duration: 0.07, gain: 0.75, seed: 18)),
+        // Panda is a strong tactile: a bump and a bottom-out close together.
+        Sound(id: "custom.panda", name: "Panda", family: .custom, press: SoundRecipe(
+            layers: [
+                .noise(gain: 3.0, decay: 0.0025, filter: .bandpass(2500, q: 2)),
+                .sine(2300, gain: 0.7, decay: 0.003),
+                .noise(gain: 1.2, decay: 0.002, filter: .bandpass(1700, q: 1.5), delay: 0.004),
+                .sine(220, gain: 0.04, decay: 0.008),
+            ],
+            duration: 0.07, gain: 0.75, seed: 19)),
+        // Cream is an unlubed linear: a faint scratch on the way down, then a deep clack.
+        Sound(id: "custom.cream", name: "Cream", family: .custom, press: SoundRecipe(
+            layers: [
+                .noise(gain: 0.4, attack: 0.006, decay: 0.001, filter: .bandpass(3500, q: 1)),
+                .noise(gain: 3.5, decay: 0.003, filter: .bandpass(1300, q: 2.5), delay: 0.008),
+                .noise(gain: 1.8, decay: 0.002, filter: .bandpass(2700, q: 1.5), delay: 0.008),
+                .sine(1270, gain: 0.4, decay: 0.003, delay: 0.008),
+                .sine(200, gain: 0.06, decay: 0.008, delay: 0.008),
+            ],
+            duration: 0.08, gain: 0.75, seed: 20)),
+
+        // Vintage: old keyboards and the machines before them.
+        // Spring is a buckling spring: a hard click with the spring ringing after it.
+        Sound(id: "vintage.spring", name: "Spring", family: .vintage, press: SoundRecipe(
+            layers: [
+                .noise(gain: 3.0, decay: 0.004, filter: .bandpass(2500, q: 1)),
+                .sine(2950, gain: 0.12, decay: 0.018),
+                .sine(4400, gain: 0.08, decay: 0.012),
+                .noise(gain: 3.5, decay: 0.006, filter: .bandpass(900, q: 1.5)),
+                .sine(450, gain: 0.1, decay: 0.012),
+                .sine(170, gain: 0.08, decay: 0.012),
+            ],
+            duration: 0.12, gain: 0.75, seed: 21)),
+        // Alps is a sharp clack with a hollow ring under it.
+        Sound(id: "vintage.alps", name: "Alps", family: .vintage, press: SoundRecipe(
+            layers: [
+                .noise(gain: 4.0, decay: 0.002, filter: .bandpass(3200, q: 2)),
+                .sine(3100, gain: 0.4, decay: 0.0025),
+                .triangle(1100, gain: 0.1, decay: 0.006),
+                .noise(gain: 1.0, decay: 0.003, filter: .bandpass(1100, q: 3)),
+            ],
+            duration: 0.07, gain: 0.7, seed: 22)),
+        // Typewriter is a typebar hitting the platen: a low thunk with a snap on top.
+        Sound(id: "vintage.typewriter", name: "Typewriter", family: .vintage, press: SoundRecipe(
+            layers: [
+                .sine(105, gain: 0.2, decay: 0.012, pitchEnd: 0.8),
+                .noise(gain: 5.0, decay: 0.008, filter: .bandpass(300, q: 2.5)),
+                .noise(gain: 4.0, decay: 0.002, filter: .highpass(6000)),
+                .sine(2200, gain: 0.2, decay: 0.004),
+            ],
+            duration: 0.1, gain: 0.85, seed: 23)),
+        // Teletype is a solenoid clunk, then the mechanism rattling.
+        Sound(id: "vintage.teletype", name: "Teletype", family: .vintage, press: SoundRecipe(
+            layers: [
+                .noise(gain: 4.5, decay: 0.012, filter: .bandpass(660, q: 1.5)),
+                .noise(gain: 0.8, decay: 0.015, filter: .highpass(5000)),
+                .sine(120, gain: 0.2, decay: 0.02),
+                .noise(gain: 1.5, decay: 0.006, filter: .bandpass(2800, q: 1), delay: 0.02),
+            ],
+            duration: 0.15, gain: 0.8, seed: 24)),
+
+        // Quiet: keyboards that keep it down.
+        // Topre is a rubber dome over a spring: a soft, round "thup".
+        Sound(id: "quiet.topre", name: "Topre", family: .quiet, press: SoundRecipe(
+            layers: [
+                .noise(gain: 4.0, decay: 0.006, filter: .bandpass(600, q: 1.5)),
+                .sine(590, gain: 0.25, decay: 0.008, pitchEnd: 0.9),
+                .noise(gain: 3.0, decay: 0.004, filter: .bandpass(1400, q: 1.5)),
+                .sine(150, gain: 0.05, decay: 0.01),
+            ],
+            duration: 0.09, gain: 0.7, seed: 25)),
+        // Silent is a dampened linear: a short, dull thud.
+        Sound(id: "quiet.silent", name: "Silent", family: .quiet, press: SoundRecipe(
+            layers: [
+                .noise(gain: 4.0, decay: 0.003, filter: .lowpass(700)),
+                .sine(180, gain: 0.1, decay: 0.006, pitchEnd: 0.8),
+                .noise(gain: 2.0, decay: 0.002, filter: .bandpass(900, q: 1)),
+            ],
+            duration: 0.06, gain: 0.55, seed: 26)),
+        // Laptop is a scissor switch: a small, flat tick.
+        Sound(id: "quiet.laptop", name: "Laptop", family: .quiet, press: SoundRecipe(
+            layers: [
+                .noise(gain: 2.5, decay: 0.0015, filter: .bandpass(2600, q: 1.2)),
+                .noise(gain: 2.0, decay: 0.003, filter: .bandpass(900, q: 1.5)),
+                .sine(200, gain: 0.03, decay: 0.005),
+            ],
+            duration: 0.05, gain: 0.5, seed: 27)),
+        // Membrane is an office rubber dome: the dome folds, then a mushy landing.
+        Sound(id: "quiet.membrane", name: "Membrane", family: .quiet, press: SoundRecipe(
+            layers: [
+                .noise(gain: 4.0, decay: 0.006, filter: .bandpass(340, q: 2)),
+                .noise(gain: 4.0, decay: 0.005, filter: .bandpass(700, q: 2.5), delay: 0.006),
+                .sine(140, gain: 0.15, decay: 0.012),
+            ],
+            duration: 0.09, gain: 0.65, seed: 28)),
     ]
 }

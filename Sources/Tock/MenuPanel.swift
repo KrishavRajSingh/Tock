@@ -83,16 +83,26 @@ struct MenuPanel: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
-            ForEach(SoundFamily.allCases, id: \.self) { family in
-                Text(family.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 4)
-                ForEach(SoundLibrary.sounds(in: family)) { sound in
-                    SoundRow(sound: sound, selected: sound.id == model.settings.soundID(for: target)) {
-                        model.select(sound, for: target)
+            // There are more sounds than fit on a small screen, so they scroll.
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(SoundFamily.allCases, id: \.self) { family in
+                            Text(family.rawValue)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 4)
+                            ForEach(SoundLibrary.sounds(in: family)) { sound in
+                                SoundRow(sound: sound, selected: sound.id == model.settings.soundID(for: target)) {
+                                    model.select(sound, for: target)
+                                }
+                            }
+                        }
                     }
                 }
+                .frame(height: 300)
+                .onAppear { proxy.scrollTo(model.settings.soundID(for: target), anchor: .center) }
+                .onChange(of: target) { proxy.scrollTo(model.settings.soundID(for: $0), anchor: .center) }
             }
         }
     }

@@ -75,18 +75,28 @@ struct MainView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
-            ForEach(SoundFamily.allCases, id: \.self) { family in
-                Text(family.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 4)
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible())], spacing: 6) {
-                    ForEach(SoundLibrary.sounds(in: family)) { sound in
-                        SoundChip(sound: sound, selected: sound.id == model.settings.soundID(for: target)) {
-                            model.select(sound, for: target)
+            // There are more families than fit on a small screen, so they scroll.
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(SoundFamily.allCases, id: \.self) { family in
+                            Text(family.rawValue)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 4)
+                            LazyVGrid(columns: [GridItem(.flexible(), spacing: 6), GridItem(.flexible())], spacing: 6) {
+                                ForEach(SoundLibrary.sounds(in: family)) { sound in
+                                    SoundChip(sound: sound, selected: sound.id == model.settings.soundID(for: target)) {
+                                        model.select(sound, for: target)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+                .frame(height: 340)
+                .onAppear { proxy.scrollTo(model.settings.soundID(for: target), anchor: .center) }
+                .onChange(of: target) { proxy.scrollTo(model.settings.soundID(for: $0), anchor: .center) }
             }
         }
     }
