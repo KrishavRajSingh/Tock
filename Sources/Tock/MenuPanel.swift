@@ -3,6 +3,7 @@ import TockCore
 
 struct MenuPanel: View {
     @ObservedObject var model: AppModel
+    let openWindow: () -> Void
 
     /// Which sound the list is choosing. Only matters while key sounds are on.
     @State private var chosenTarget = SoundTarget.mouse
@@ -63,6 +64,7 @@ struct MenuPanel: View {
 
             Divider()
 
+            Button("Open Tock", action: openWindow)
             Button("Quit Tock") { NSApplication.shared.terminate(nil) }
                 .keyboardShortcut("q")
         }
@@ -127,7 +129,7 @@ private struct SoundRow: View {
     }
 }
 
-private struct StatusRow: View {
+struct StatusRow: View {
     let text: String
     let button: String
     let action: () -> Void

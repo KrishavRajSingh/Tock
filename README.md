@@ -1,9 +1,13 @@
 # Tock
 
-Tock is a macOS menu-bar app that plays a sound every time you click the mouse,
+Tock is a macOS app that plays a sound every time you click the mouse,
 and optionally a soft tick as you scroll and a sound as you type.
 The sounds are synthesized in code: 12 of them, in three families (Desk, Analog,
 Toybox). It is free and open source.
+
+Opening Tock shows a small window for picking a sound and setting the volume.
+Closing the window leaves Tock running; the same controls stay in the menu bar,
+and clicking the Dock icon brings the window back.
 
 Mouse and scroll sounds need no special permission. Keyboard sounds are off
 until you turn them on, and need the Input Monitoring permission. Even then
@@ -31,6 +35,9 @@ Applications):
 ```bash
 scripts/dmg.sh
 ```
+
+The app icon is drawn by `scripts/icon.swift`; after changing it, run
+`scripts/icon.sh` to rewrite `Resources/Tock.icns`.
 
 The download page lives in `docs/index.html` and is served by GitHub Pages.
 
