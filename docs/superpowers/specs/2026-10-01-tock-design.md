@@ -28,6 +28,10 @@ In v1:
 - Optional sound on scroll (off by default): one tick per wheel notch, or per
   40 points of trackpad travel, at most one tick every 30 ms.
 - 12 synthesized sounds in 3 families.
+- Optional sound on key press and release (off by default). Needs the Input
+  Monitoring permission, asked for only when the user turns it on. Uses a
+  listen-only `CGEventTap`; reads only the event type and the repeat flag,
+  never the key code. Held-key repeats are silent.
 - Menu-bar UI to enable/disable, pick a sound, set volume.
 - First-launch welcome window; no permission is needed for mouse buttons.
 - Launch at login.
@@ -36,7 +40,6 @@ Out of v1:
 
 - Click ripples or any other visual overlay.
 - Screen recorder, webcam bubble, vertical clips.
-- Keyboard sounds.
 - User-supplied sound files.
 - Click statistics, desktop pet.
 - Payments, licence keys, auto-update.
@@ -110,6 +113,7 @@ Stored in `UserDefaults`:
 - `volume` 0...1 (default 0.6)
 - `releaseSoundEnabled` (default on)
 - `scrollSoundEnabled` (default off)
+- `keySoundEnabled` (default off)
 
 Launch at login is read from and written to `SMAppService.mainApp`, not stored
 separately, so the setting cannot drift from the system's state.
@@ -123,7 +127,8 @@ needed" row with a button instead of the sound list being silently dead.
 
 **Onboarding** (app target)
 Shown on first launch and whenever permission is missing. One window that
-explains that Tock listens only for mouse buttons and never for keystrokes,
+explains that Tock listens for mouse buttons and scrolling, and that keyboard
+sounds are off until turned on and never read which key was pressed,
 with a button that opens the relevant pane of System Settings.
 
 ### Data flow

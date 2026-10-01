@@ -37,6 +37,13 @@ struct MenuPanel: View {
 
             Toggle("Sound on release", isOn: $model.settings.releaseSoundEnabled)
             Toggle("Sound on scroll", isOn: $model.settings.scrollSoundEnabled)
+            Toggle("Sound on key press", isOn: $model.settings.keySoundEnabled)
+            if model.keyPermissionNeeded {
+                StatusRow(
+                    text: "Allow Tock in Input Monitoring, then quit and reopen Tock",
+                    button: "Open Settings",
+                    action: model.openInputMonitoringSettings)
+            }
             Toggle(
                 "Launch at login",
                 isOn: Binding(get: { model.launchAtLogin }, set: { model.setLaunchAtLogin($0) }))

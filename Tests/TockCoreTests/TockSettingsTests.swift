@@ -9,6 +9,11 @@ import Testing
         #expect(settings.volume == 0.6)
         #expect(settings.releaseSoundEnabled)
         #expect(!settings.scrollSoundEnabled)
+        #expect(!settings.keySoundEnabled)
+    }
+
+    @Test func storedKeySettingIsKept() {
+        #expect(TockSettings(keySoundEnabled: true).keySoundEnabled)
     }
 
     @Test func storedScrollSettingIsKept() {

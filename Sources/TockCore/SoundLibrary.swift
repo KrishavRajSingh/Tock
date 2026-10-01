@@ -11,8 +11,9 @@ public struct Sound: Identifiable, Equatable, Sendable {
     public let press: SoundRecipe
     public let release: SoundRecipe
     public let scroll: SoundRecipe
+    public let key: SoundRecipe
 
-    /// A sound whose release and scroll tick are derived from its press.
+    /// A sound whose release, scroll tick and key sound are derived from its press.
     init(id: String, name: String, family: SoundFamily, press: SoundRecipe) {
         self.id = id
         self.name = name
@@ -20,6 +21,7 @@ public struct Sound: Identifiable, Equatable, Sendable {
         self.press = press
         self.release = SoundLibrary.release(of: press)
         self.scroll = SoundLibrary.scroll(of: press)
+        self.key = SoundLibrary.key(of: press)
     }
 }
 
@@ -46,6 +48,12 @@ public enum SoundLibrary {
     /// The scroll tick of a press: much shorter, much quieter and higher.
     public static func scroll(of press: SoundRecipe) -> SoundRecipe {
         variant(of: press, time: 0.35, pitch: 1.5, gain: 0.3, seedOffset: 2000)
+    }
+
+    /// The key-press sound of a press: a little shorter, quieter and higher,
+    /// since typing is far more frequent than clicking.
+    public static func key(of press: SoundRecipe) -> SoundRecipe {
+        variant(of: press, time: 0.8, pitch: 1.1, gain: 0.7, seedOffset: 3000)
     }
 
     /// `press` with its timing, pitch and level scaled.

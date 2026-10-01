@@ -10,6 +10,9 @@ final class AppModel: ObservableObject {
             guard settings != oldValue else { return }
             settings.save()
             player.volume = Float(settings.volume)
+            if settings.keySoundEnabled != oldValue.keySoundEnabled {
+                updateKeyMonitor(askForPermission: true)
+            }
         }
     }
 
@@ -17,8 +20,11 @@ final class AppModel: ObservableObject {
     @Published private(set) var listening = false
     @Published private(set) var launchAtLogin = false
     @Published private(set) var launchAtLoginError: String?
+    /// True when key sounds are on but macOS has not allowed Tock to listen.
+    @Published private(set) var keyPermissionNeeded = false
 
     private let monitor = ClickMonitor()
+    private let keyMonitor = KeyMonitor()
     private let player = AudioPlayer()
     private var scrollTicker = ScrollTicker()
 
@@ -33,6 +39,9 @@ final class AppModel: ObservableObject {
         monitor.handler = { [weak self] _, phase in
             self?.handleClick(phase)
         }
+        keyMonitor.handler = { [weak self] phase in
+            self?.handleKey(phase)
+        }
         monitor.scrollHandler = { [weak self] distance, precise in
             self?.handleScroll(distance: distance, precise: precise)
         }
@@ -46,6 +55,7 @@ final class AppModel: ObservableObject {
         player.start()
         monitor.start()
         listening = monitor.isListening
+        updateKeyMonitor(askForPermission: false)
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
@@ -84,6 +94,32 @@ final class AppModel: ObservableObject {
         guard settings.enabled else { return }
         if phase == .release, !settings.releaseSoundEnabled { return }
         player.play(phase)
+    }
+
+    private func handleKey(_ phase: ClickPhase) {
+        guard settings.enabled, settings.keySoundEnabled else { return }
+        switch phase {
+        case .press:
+            player.playKey()
+        case .release:
+            if settings.releaseSoundEnabled { player.play(.release) }
+        }
+    }
+
+    /// Starts or stops key listening to match the setting. The system
+    /// permission prompt is only raised when the user has just turned key
+    /// sounds on, never on launch.
+    private func updateKeyMonitor(askForPermission: Bool) {
+        guard settings.keySoundEnabled else {
+            keyMonitor.stop()
+            keyPermissionNeeded = false
+            return
+        }
+        if askForPermission, !keyMonitor.hasPermission {
+            keyMonitor.requestPermission()
+        }
+        keyMonitor.start()
+        keyPermissionNeeded = !keyMonitor.isListening
     }
 
     private func handleScroll(distance: Double, precise: Bool) {

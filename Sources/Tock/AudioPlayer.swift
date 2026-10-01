@@ -24,6 +24,7 @@ final class AudioPlayer {
     private var pressBuffers: [AVAudioPCMBuffer] = []
     private var releaseBuffers: [AVAudioPCMBuffer] = []
     private var scrollBuffers: [AVAudioPCMBuffer] = []
+    private var keyBuffers: [AVAudioPCMBuffer] = []
     private var observer: NSObjectProtocol?
 
     init() {
@@ -73,11 +74,13 @@ final class AudioPlayer {
             let press = Self.buffers(for: sound.press, format: format)
             let release = Self.buffers(for: sound.release, format: format)
             let scroll = Self.buffers(for: sound.scroll, format: format)
+            let key = Self.buffers(for: sound.key, format: format)
             DispatchQueue.main.async { [weak self] in
                 guard let self, generation == self.loadGeneration else { return }
                 self.pressBuffers = press
                 self.releaseBuffers = release
                 self.scrollBuffers = scroll
+                self.keyBuffers = key
                 completion?()
             }
         }
@@ -89,6 +92,10 @@ final class AudioPlayer {
 
     func playScrollTick() {
         play(oneOf: scrollBuffers)
+    }
+
+    func playKey() {
+        play(oneOf: keyBuffers)
     }
 
     private func play(oneOf buffers: [AVAudioPCMBuffer]) {
