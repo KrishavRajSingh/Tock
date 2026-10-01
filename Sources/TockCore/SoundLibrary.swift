@@ -2,6 +2,7 @@ public enum SoundFamily: String, CaseIterable, Sendable {
     case desk = "Desk"
     case analog = "Analog"
     case toybox = "Toybox"
+    case mechanical = "Mechanical"
 }
 
 public struct Sound: Identifiable, Equatable, Sendable {
@@ -152,5 +153,43 @@ public enum SoundLibrary {
                 .noise(gain: 0.3, decay: 0.003, filter: .bandpass(2500, q: 3)),
             ],
             duration: 0.07, gain: 0.65, seed: 12)),
+
+        // Mechanical: keyboard switches, named after the usual stem colours.
+        // Blue is clicky: the click jacket snaps, then the key bottoms out.
+        Sound(id: "mechanical.blue", name: "Blue", family: .mechanical, press: SoundRecipe(
+            layers: [
+                .noise(gain: 2.0, decay: 0.0012, filter: .highpass(6000)),
+                .sine(3400, gain: 0.8, decay: 0.002),
+                .noise(gain: 2.5, decay: 0.0025, filter: .bandpass(2800, q: 1.5), delay: 0.011),
+                .sine(1500, gain: 0.12, decay: 0.003, delay: 0.011),
+                .sine(300, gain: 0.06, decay: 0.008, pitchEnd: 0.85, delay: 0.011),
+            ],
+            duration: 0.07, gain: 0.7, seed: 13)),
+        // Brown is tactile: a soft bump, then a rounder bottom-out.
+        Sound(id: "mechanical.brown", name: "Brown", family: .mechanical, press: SoundRecipe(
+            layers: [
+                .noise(gain: 0.5, decay: 0.0015, filter: .bandpass(3500, q: 2)),
+                .noise(gain: 2.5, decay: 0.0025, filter: .bandpass(2200, q: 1.5), delay: 0.006),
+                .sine(1900, gain: 0.3, decay: 0.003, delay: 0.006),
+                .sine(260, gain: 0.1, decay: 0.008, pitchEnd: 0.8, delay: 0.006),
+            ],
+            duration: 0.07, gain: 0.75, seed: 14)),
+        // Red is linear: nothing until the bottom-out clack.
+        Sound(id: "mechanical.red", name: "Red", family: .mechanical, press: SoundRecipe(
+            layers: [
+                .noise(gain: 3.0, decay: 0.004, filter: .bandpass(1300, q: 1.5)),
+                .sine(1250, gain: 0.5, decay: 0.004),
+                .noise(gain: 0.8, decay: 0.003, filter: .bandpass(1800, q: 2), delay: 0.005),
+                .sine(280, gain: 0.08, decay: 0.008, pitchEnd: 0.8),
+            ],
+            duration: 0.07, gain: 0.7, seed: 15)),
+        // Thock is a lubed switch in a heavy, foam-filled case: low and damped.
+        Sound(id: "mechanical.thock", name: "Thock", family: .mechanical, press: SoundRecipe(
+            layers: [
+                .sine(120, gain: 0.08, decay: 0.012, pitchEnd: 0.85),
+                .noise(gain: 4.0, decay: 0.005, filter: .bandpass(600, q: 1.5)),
+                .noise(gain: 2.5, decay: 0.0025, filter: .bandpass(2000, q: 1)),
+            ],
+            duration: 0.09, gain: 0.85, seed: 16)),
     ]
 }

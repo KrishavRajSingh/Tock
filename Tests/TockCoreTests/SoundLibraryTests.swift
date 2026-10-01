@@ -2,16 +2,23 @@ import Testing
 @testable import TockCore
 
 @Suite struct SoundLibraryTests {
-    @Test func hasTwelveSoundsFourPerFamily() {
-        #expect(SoundLibrary.sounds.count == 12)
+    @Test func hasSixteenSoundsFourPerFamily() {
+        #expect(SoundLibrary.sounds.count == 16)
+        #expect(SoundFamily.allCases.count == 4)
         for family in SoundFamily.allCases {
             #expect(SoundLibrary.sounds(in: family).count == 4)
         }
     }
 
     @Test func idsAndNamesAreUnique() {
-        #expect(Set(SoundLibrary.sounds.map(\.id)).count == 12)
-        #expect(Set(SoundLibrary.sounds.map(\.name)).count == 12)
+        #expect(Set(SoundLibrary.sounds.map(\.id)).count == 16)
+        #expect(Set(SoundLibrary.sounds.map(\.name)).count == 16)
+    }
+
+    @Test func mechanicalFamilyHasTheFourSwitches() {
+        #expect(SoundLibrary.sounds(in: .mechanical).map(\.id) == [
+            "mechanical.blue", "mechanical.brown", "mechanical.red", "mechanical.thock",
+        ])
     }
 
     @Test func defaultSoundIsFirstDeskSound() {
