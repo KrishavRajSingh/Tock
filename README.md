@@ -25,6 +25,15 @@ The build is not signed with an Apple Developer ID. If macOS refuses to open a
 copy you downloaded, open System Settings → Privacy & Security and choose
 "Open Anyway". A copy you build yourself opens without that step.
 
+To make a disk image that others can install from (open it, drag Tock to
+Applications):
+
+```bash
+scripts/dmg.sh
+```
+
+The download page lives in `docs/index.html` and is served by GitHub Pages.
+
 To run without making a bundle (launch at login is unavailable this way):
 
 ```bash

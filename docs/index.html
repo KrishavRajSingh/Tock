@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tock: click sounds for your Mac</title>
+<meta name="description" content="Tock is a free, open-source menu-bar app that plays a small synthesized sound on every click, scroll and key press.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mat: #DDE3EA;      /* the desk surface */
+    --ink: #16202C;
+    --soft: #4A5868;     /* secondary text */
+    --cap: #F7F9FB;      /* top of a key */
+    --walnut: #8C5A3A;   /* Desk family */
+    --teal: #1E7C82;     /* Analog family */
+    --yolk: #D9960A;     /* Toybox family */
+    --signal: #2B4BE0;   /* the one thing to press */
+    --signal-deep: #1A2F9C;
+    --travel: 6px;       /* how far a key goes down */
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--mat);
+    color: var(--ink);
+    font-family: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  a { color: inherit; text-underline-offset: 0.2em; }
+
+  :focus-visible {
+    outline: 3px solid var(--signal);
+    outline-offset: 4px;
+  }
+
+  /* Top bar */
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1.5rem 0;
+    font-weight: 600;
+  }
+  .bar .name { font-size: 1.25rem; font-weight: 800; font-stretch: 85%; }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 3.5rem;
+    align-items: center;
+    padding: 3rem 0 5rem;
+  }
+
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    font-weight: 800;
+    font-stretch: 75%;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+  }
+
+  .lede {
+    margin: 0 0 2rem;
+    max-width: 30ch;
+    font-size: 1.375rem;
+    line-height: 1.35;
+  }
+
+  .fine { margin: 1.25rem 0 0; color: var(--soft); font-size: 1rem; }
+
+  /* Everything you can press on this page is a key: a pale cap sitting on a
+     coloured base, which it sinks into when pressed. */
+  .key {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    background: var(--cap);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem 1rem 2.25rem;
+    box-shadow: 0 var(--travel) 0 var(--base, var(--soft));
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 40ms linear, box-shadow 40ms linear;
+  }
+  .key.down {
+    transform: translateY(calc(var(--travel) - 1px));
+    box-shadow: 0 1px 0 var(--base, var(--soft));
+  }
+
+  .download {
+    display: inline-block;
+    width: auto;
+    padding: 1.125rem 2rem;
+    background: var(--signal);
+    color: #fff;
+    --base: var(--signal-deep);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .download:active {
+    transform: translateY(calc(var(--travel) - 1px));
+    box-shadow: 0 1px 0 var(--base);
+  }
+
+  /* The board */
+  .board { display: grid; gap: 1.5rem; }
+  .board p { margin: 0; color: var(--soft); font-size: 1rem; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 4.5rem repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-items: start;
+  }
+  .row h2 {
+    margin: 0;
+    padding-top: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--base);
+  }
+  .desk { --base: var(--walnut); }
+  .analog { --base: var(--teal); }
+  .toybox { --base: var(--yolk); }
+
+  /* Below the hero */
+  .rest {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 3.5rem;
+    padding-top: 4rem;
+    border-top: 2px solid var(--ink);
+  }
+
+  .rest h2 {
+    margin: 0 0 1.5rem;
+    font-size: 2.25rem;
+    font-weight: 800;
+    font-stretch: 80%;
+    line-height: 1;
+  }
+
+  ol { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+  ol li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 1.25rem 3rem;
+    max-width: 34rem;
+  }
+  ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: -0.15em;
+    font-size: 1.75rem;
+    font-weight: 800;
+    font-stretch: 75%;
+    color: var(--signal);
+  }
+
+  dl { margin: 0; }
+  dt { font-weight: 700; }
+  dd { margin: 0 0 1.25rem; color: var(--soft); max-width: 30rem; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+    color: var(--soft);
+    font-size: 1rem;
+  }
+
+  @media (max-width: 54rem) {
+    .hero, .rest { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
+    .hero { padding-top: 1.5rem; }
+    .row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .row h2 { grid-column: 1 / -1; padding-top: 0; }
+    .key { padding: 0.75rem 0.5rem 1.75rem; font-size: 0.9375rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .key { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="bar">
+    <span class="name">Tock</span>
+    <a href="https://github.com/KrishavRajSingh/tock">Source code</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Your Mac goes tock.</h1>
+        <p class="lede">A small sound on every click. On scroll and key press too, if you want. Twelve sounds to pick from.</p>
+        <a class="key download" href="https://github.com/KrishavRajSingh/tock/releases/latest/download/Tock.dmg">Download for Mac</a>
+        <p class="fine">Free and open source. macOS 13 or later. Under 1 MB.</p>
+      </div>
+
+      <div class="board" id="board" aria-label="Try the sounds">
+        <p>Press a key to hear it. Hold, then let go: the release has its own sound.</p>
+      </div>
+    </section>
+
+    <section class="rest">
+      <div>
+        <h2>Install</h2>
+        <ol>
+          <li>Download Tock.dmg and open it.</li>
+          <li>Drag Tock onto the Applications folder.</li>
+          <li>Open Tock from Applications. macOS refuses the first time, because Tock isn't signed with a paid Apple certificate. Choose Done.</li>
+          <li>Open System Settings, go to Privacy &amp; Security, scroll down and choose Open Anyway. You only do this once.</li>
+          <li>Click the cursor icon in the menu bar and pick a sound.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h2>What Tock listens to</h2>
+        <dl>
+          <dt>Mouse clicks and scrolling</dt>
+          <dd>No permission needed. Tock knows a button went down or the wheel moved, not what you clicked on.</dd>
+          <dt>Key presses, only if you turn them on</dt>
+          <dd>macOS asks you to allow Input Monitoring. Tock notices that a key went down or up. It never reads which key. After an update macOS may ask again.</dd>
+          <dt>Nothing leaves your Mac</dt>
+          <dd>Tock has no network code. The sounds are made on your Mac, from a few lines of maths each.</dd>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Tock is MIT licensed. Read the code, change the sounds, or report a problem on
+    <a href="https://github.com/KrishavRajSingh/tock">GitHub</a>.
+  </footer>
+
+</div>
+
+<script>
+// The same recipes and synthesis as the app (Sources/TockCore), in JavaScript,
+// so the keys on this page sound like the real thing.
+
+const sine = (f, gain, decay, o = {}) => ({ src: "sine", f, gain, attack: 0.0005, decay, pitchEnd: 1, delay: 0, ...o });
+const tri = (f, gain, decay, o = {}) => ({ src: "tri", f, gain, attack: 0.0005, decay, pitchEnd: 1, delay: 0, ...o });
+const noise = (gain, decay, filter, o = {}) => ({ src: "noise", gain, attack: 0, decay, pitchEnd: 1, delay: 0, filter, ...o });
+const band = (f, q) => ({ kind: "band", f, q });
+const high = (f) => ({ kind: "high", f, q: 0.707 });
+const low = (f) => ({ kind: "low", f, q: 0.707 });
+
+const families = [
+  { name: "Desk", cls: "desk", sounds: [
+    { name: "Tock", duration: 0.09, gain: 0.8, layers: [sine(190, 1, 0.022, { pitchEnd: 0.7 }), noise(0.5, 0.004, band(1800, 2))] },
+    { name: "Switch", duration: 0.06, gain: 0.75, layers: [noise(0.7, 0.003, high(3000)), sine(2400, 0.35, 0.006), sine(320, 0.6, 0.012, { pitchEnd: 0.8 })] },
+    { name: "Wood", duration: 0.09, gain: 0.8, layers: [tri(520, 1, 0.02, { pitchEnd: 0.85 }), noise(0.4, 0.008, band(900, 4))] },
+    { name: "Pen", duration: 0.06, gain: 0.7, layers: [noise(0.8, 0.004, band(4200, 6)), noise(0.6, 0.004, band(5200, 6), { delay: 0.018 }), sine(700, 0.3, 0.01)] },
+  ] },
+  { name: "Analog", cls: "analog", sounds: [
+    { name: "Blip", duration: 0.09, gain: 0.6, layers: [sine(880, 1, 0.025)] },
+    { name: "Zap", duration: 0.1, gain: 0.6, layers: [sine(1500, 1, 0.03, { pitchEnd: 0.25 })] },
+    { name: "Thump", duration: 0.16, gain: 0.85, layers: [sine(150, 1, 0.045, { attack: 0.001, pitchEnd: 0.45 }), noise(0.25, 0.006, low(700))] },
+    { name: "Tick", duration: 0.04, gain: 0.6, layers: [tri(2200, 0.8, 0.006), noise(0.5, 0.002, high(6000))] },
+  ] },
+  { name: "Toybox", cls: "toybox", sounds: [
+    { name: "Pop", duration: 0.07, gain: 0.75, layers: [sine(380, 1, 0.018, { pitchEnd: 2.2 })] },
+    { name: "Bubble", duration: 0.12, gain: 0.7, layers: [sine(520, 1, 0.03, { attack: 0.004, pitchEnd: 1.9 })] },
+    { name: "Squeak", duration: 0.1, gain: 0.5, layers: [tri(1300, 1, 0.025, { attack: 0.003, pitchEnd: 1.5 }), sine(2600, 0.2, 0.02, { pitchEnd: 1.5 })] },
+    { name: "Marble", duration: 0.07, gain: 0.65, layers: [sine(1900, 1, 0.012), sine(2850, 0.5, 0.008), noise(0.3, 0.003, band(2500, 3))] },
+  ] },
+];
+
+// The release of a press: shorter, quieter and a little higher.
+function releaseOf(press) {
+  return {
+    duration: press.duration * 0.6,
+    gain: press.gain * 0.5,
+    layers: press.layers.map((l) => ({
+      ...l,
+      f: l.f && l.f * 1.2,
+      decay: l.decay * 0.6,
+      delay: l.delay * 0.6,
+      filter: l.filter && { ...l.filter, f: l.filter.f * 1.2 },
+    })),
+  };
+}
+
+function biquad(filter, shift, rate) {
+  const f = Math.min(Math.max(filter.f * shift, 20), rate * 0.45);
+  const w = (2 * Math.PI * f) / rate;
+  const alpha = Math.sin(w) / (2 * Math.max(filter.q, 0.1));
+  const c = Math.cos(w);
+  const a0 = 1 + alpha;
+  let b0, b1, b2;
+  if (filter.kind === "low") { b0 = (1 - c) / 2; b1 = 1 - c; b2 = b0; }
+  else if (filter.kind === "high") { b0 = (1 + c) / 2; b1 = -(1 + c); b2 = b0; }
+  else { b0 = alpha; b1 = 0; b2 = -alpha; }
+  b0 /= a0; b1 /= a0; b2 /= a0;
+  const a1 = (-2 * c) / a0, a2 = (1 - alpha) / a0;
+  let z1 = 0, z2 = 0;
+  return (x) => {
+    const y = b0 * x + z1;
+    z1 = b1 * x - a1 * y + z2;
+    z2 = b2 * x - a2 * y;
+    return y;
+  };
+}
+
+function render(recipe, rate, shift) {
+  const count = Math.round(recipe.duration * rate);
+  const mix = new Float64Array(count);
+
+  for (const layer of recipe.layers) {
+    const start = Math.round(layer.delay * rate);
+    const filter = layer.filter ? biquad(layer.filter, shift, rate) : null;
+    const glideTime = Math.max(layer.decay, 0.0001);
+    let phase = 0;
+    for (let i = start; i < count; i++) {
+      const t = (i - start) / rate;
+      let x;
+      if (layer.src === "noise") {
+        x = Math.random() * 2 - 1;
+      } else {
+        const glide = layer.pitchEnd + (1 - layer.pitchEnd) * Math.exp(-t / glideTime);
+        const f = Math.min(layer.f * shift * glide, rate * 0.45);
+        if (layer.src === "sine") {
+          x = Math.sin(2 * Math.PI * phase);
+        } else {
+          const p = phase + 0.25;
+          x = 4 * Math.abs(p - Math.floor(p + 0.5)) - 1;
+        }
+        phase += f / rate;
+        phase -= Math.floor(phase);
+      }
+      if (filter) x = filter(x);
+      const env = t < layer.attack ? t / layer.attack : Math.exp(-(t - layer.attack) / layer.decay);
+      mix[i] += x * env * layer.gain;
+    }
+  }
+
+  // Short fades so a sound never starts or ends with a pop.
+  const fadeIn = Math.min(count, Math.max(1, Math.floor(0.0003 * rate)));
+  const fadeOut = Math.min(count, Math.max(1, Math.floor(0.004 * rate)));
+  for (let i = 0; i < fadeIn; i++) mix[i] *= i / fadeIn;
+  for (let i = 0; i < fadeOut; i++) mix[count - 1 - i] *= i / fadeOut;
+
+  let peak = 0;
+  for (const v of mix) peak = Math.max(peak, Math.abs(v));
+  const scale = peak > 0 ? recipe.gain / peak : 0;
+  return Float32Array.from(mix, (v) => v * scale);
+}
+
+let audio = null;
+const variants = [0.97, 0.985, 1, 1.015, 1.03];
+
+function play(recipe) {
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if (!Context) return;
+  audio = audio || new Context();
+  if (audio.state === "suspended") audio.resume();
+
+  const shift = variants[Math.floor(Math.random() * variants.length)];
+  const samples = render(recipe, audio.sampleRate, shift);
+  const buffer = audio.createBuffer(1, samples.length, audio.sampleRate);
+  buffer.copyToChannel(samples, 0);
+  const node = audio.createBufferSource();
+  node.buffer = buffer;
+  node.connect(audio.destination);
+  node.start();
+}
+
+const board = document.getElementById("board");
+
+for (const family of families) {
+  const row = document.createElement("div");
+  row.className = "row " + family.cls;
+  const heading = document.createElement("h2");
+  heading.textContent = family.name;
+  row.append(heading);
+
+  for (const sound of family.sounds) {
+    const release = releaseOf(sound);
+    const key = document.createElement("button");
+    key.type = "button";
+    key.className = "key";
+    key.textContent = sound.name;
+
+    const press = () => {
+      if (key.classList.contains("down")) return;
+      key.classList.add("down");
+      play(sound);
+    };
+    const letGo = () => {
+      if (!key.classList.contains("down")) return;
+      key.classList.remove("down");
+      play(release);
+    };
+
+    key.addEventListener("pointerdown", press);
+    key.addEventListener("pointerup", letGo);
+    key.addEventListener("pointerleave", letGo);
+    key.addEventListener("pointercancel", letGo);
+    key.addEventListener("keydown", (e) => {
+      if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); press(); }
+    });
+    key.addEventListener("keyup", (e) => {
+      if (e.key === " " || e.key === "Enter") letGo();
+    });
+    key.addEventListener("blur", letGo);
+
+    row.append(key);
+  }
+  board.append(row);
+}
+</script>
+</body>
+</html>
