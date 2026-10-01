@@ -4,6 +4,13 @@ import TockCore
 struct MenuPanel: View {
     @ObservedObject var model: AppModel
 
+    /// Which sound the list is choosing. Only matters while key sounds are on.
+    @State private var chosenTarget = SoundTarget.mouse
+
+    private var target: SoundTarget {
+        model.settings.keySoundEnabled ? chosenTarget : .mouse
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Toggle("Click sounds", isOn: $model.settings.enabled)
@@ -66,14 +73,22 @@ struct MenuPanel: View {
 
     private var soundList: some View {
         VStack(alignment: .leading, spacing: 2) {
+            if model.settings.keySoundEnabled {
+                Picker("Sound for", selection: $chosenTarget) {
+                    Text("Mouse").tag(SoundTarget.mouse)
+                    Text("Keyboard").tag(SoundTarget.keyboard)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
             ForEach(SoundFamily.allCases, id: \.self) { family in
                 Text(family.rawValue)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.top, 4)
                 ForEach(SoundLibrary.sounds(in: family)) { sound in
-                    SoundRow(sound: sound, selected: sound.id == model.settings.soundID) {
-                        model.select(sound)
+                    SoundRow(sound: sound, selected: sound.id == model.settings.soundID(for: target)) {
+                        model.select(sound, for: target)
                     }
                 }
             }

@@ -20,11 +20,15 @@ final class AudioPlayer {
     private let renderQueue = DispatchQueue(label: "tock.render", qos: .userInitiated)
     private var connected = false
     private var nextVoice = 0
-    private var loadGeneration = 0
-    private var pressBuffers: [AVAudioPCMBuffer] = []
-    private var releaseBuffers: [AVAudioPCMBuffer] = []
-    private var scrollBuffers: [AVAudioPCMBuffer] = []
-    private var keyBuffers: [AVAudioPCMBuffer] = []
+    private var loadGenerations: [SoundTarget: Int] = [:]
+    private var buffers: [SoundTarget: BufferSet] = [:]
+
+    /// The ready-to-play buffers of one sound, one per pitch variant.
+    private struct BufferSet {
+        var press: [AVAudioPCMBuffer] = []
+        var release: [AVAudioPCMBuffer] = []
+        var scroll: [AVAudioPCMBuffer] = []
+    }
     private var observer: NSObjectProtocol?
 
     init() {
@@ -64,38 +68,35 @@ final class AudioPlayer {
         return engine.isRunning
     }
 
-    /// Renders `sound` off the main thread, then swaps the buffers in on the
-    /// main thread. If another load starts meanwhile, this one is dropped.
-    func load(_ sound: Sound, completion: (() -> Void)? = nil) {
-        loadGeneration += 1
-        let generation = loadGeneration
+    /// Renders `sound` for `target` off the main thread, then swaps the
+    /// buffers in on the main thread. If another load for the same target
+    /// starts meanwhile, this one is dropped.
+    func load(_ sound: Sound, for target: SoundTarget, completion: (() -> Void)? = nil) {
+        let generation = (loadGenerations[target] ?? 0) + 1
+        loadGenerations[target] = generation
         let format = format
         renderQueue.async {
-            let press = Self.buffers(for: sound.press, format: format)
-            let release = Self.buffers(for: sound.release, format: format)
-            let scroll = Self.buffers(for: sound.scroll, format: format)
-            let key = Self.buffers(for: sound.key, format: format)
+            // The keyboard uses the sound's lighter key variant and never scrolls.
+            let press = target == .mouse ? sound.press : sound.key
+            let set = BufferSet(
+                press: Self.buffers(for: press, format: format),
+                release: Self.buffers(for: sound.release, format: format),
+                scroll: target == .mouse ? Self.buffers(for: sound.scroll, format: format) : [])
             DispatchQueue.main.async { [weak self] in
-                guard let self, generation == self.loadGeneration else { return }
-                self.pressBuffers = press
-                self.releaseBuffers = release
-                self.scrollBuffers = scroll
-                self.keyBuffers = key
+                guard let self, generation == self.loadGenerations[target] else { return }
+                self.buffers[target] = set
                 completion?()
             }
         }
     }
 
-    func play(_ phase: ClickPhase) {
-        play(oneOf: phase == .press ? pressBuffers : releaseBuffers)
+    func play(_ phase: ClickPhase, for target: SoundTarget) {
+        guard let set = buffers[target] else { return }
+        play(oneOf: phase == .press ? set.press : set.release)
     }
 
     func playScrollTick() {
-        play(oneOf: scrollBuffers)
-    }
-
-    func playKey() {
-        play(oneOf: keyBuffers)
+        play(oneOf: buffers[.mouse]?.scroll ?? [])
     }
 
     private func play(oneOf buffers: [AVAudioPCMBuffer]) {

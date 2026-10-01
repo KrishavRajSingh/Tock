@@ -110,6 +110,8 @@ Stored in `UserDefaults`:
 
 - `enabled` (default on)
 - `soundID` (default: first sound in Desk)
+- `keySoundID` (the sound for key presses, chosen with the panel's
+  Mouse | Keyboard switch; starts as `soundID` when nothing is stored)
 - `volume` 0...1 (default 0.6)
 - `releaseSoundEnabled` (default on)
 - `scrollSoundEnabled` (default off)

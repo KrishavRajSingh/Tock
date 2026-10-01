@@ -46,7 +46,9 @@ final class AppModel: ObservableObject {
             self?.handleScroll(distance: distance, precise: precise)
         }
         player.volume = Float(settings.volume)
-        player.load(SoundLibrary.sound(id: settings.soundID))
+        for target in SoundTarget.allCases {
+            player.load(SoundLibrary.sound(id: settings.soundID(for: target)), for: target)
+        }
         refresh()
     }
 
@@ -59,15 +61,15 @@ final class AppModel: ObservableObject {
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
-    /// Makes `sound` the current sound and plays it once.
-    func select(_ sound: Sound) {
-        if sound.id == settings.soundID {
-            player.play(.press)
+    /// Makes `sound` the current sound for `target` and plays it once.
+    func select(_ sound: Sound, for target: SoundTarget) {
+        if sound.id == settings.soundID(for: target) {
+            player.play(.press, for: target)
             return
         }
-        settings.soundID = sound.id
-        player.load(sound) { [weak self] in
-            self?.player.play(.press)
+        settings.setSoundID(sound.id, for: target)
+        player.load(sound, for: target) { [weak self] in
+            self?.player.play(.press, for: target)
         }
     }
 
@@ -93,17 +95,13 @@ final class AppModel: ObservableObject {
     private func handleClick(_ phase: ClickPhase) {
         guard settings.enabled else { return }
         if phase == .release, !settings.releaseSoundEnabled { return }
-        player.play(phase)
+        player.play(phase, for: .mouse)
     }
 
     private func handleKey(_ phase: ClickPhase) {
         guard settings.enabled, settings.keySoundEnabled else { return }
-        switch phase {
-        case .press:
-            player.playKey()
-        case .release:
-            if settings.releaseSoundEnabled { player.play(.release) }
-        }
+        if phase == .release, !settings.releaseSoundEnabled { return }
+        player.play(phase, for: .keyboard)
     }
 
     /// Starts or stops key listening to match the setting. The system
