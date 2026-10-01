@@ -87,6 +87,14 @@ final class AppModel: ObservableObject {
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
+    /// Registers this build with macOS for Input Monitoring, then opens the
+    /// settings pane. Registering matters after an update: macOS ties a grant
+    /// to the exact build, so an old "on" switch does not cover a new build.
+    func requestKeyPermission() {
+        keyMonitor.requestPermission()
+        openInputMonitoringSettings()
+    }
+
     func openInputMonitoringSettings() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
         NSWorkspace.shared.open(url)

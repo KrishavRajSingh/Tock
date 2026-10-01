@@ -49,7 +49,7 @@ struct MenuPanel: View {
                 StatusRow(
                     text: "Allow Tock in Input Monitoring, then quit and reopen Tock",
                     button: "Open Settings",
-                    action: model.openInputMonitoringSettings)
+                    action: model.requestKeyPermission)
             }
             Toggle(
                 "Launch at login",
