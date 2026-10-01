@@ -7,9 +7,11 @@ public struct TockSettings: Equatable, Sendable {
     public var soundID: String
     public var volume: Double
     public var releaseSoundEnabled: Bool
+    public var scrollSoundEnabled: Bool
 
     public init(
-        enabled: Bool? = nil, soundID: String? = nil, volume: Double? = nil, releaseSoundEnabled: Bool? = nil
+        enabled: Bool? = nil, soundID: String? = nil, volume: Double? = nil,
+        releaseSoundEnabled: Bool? = nil, scrollSoundEnabled: Bool? = nil
     ) {
         self.enabled = enabled ?? true
         self.soundID = SoundLibrary.sound(id: soundID ?? "").id
@@ -19,5 +21,6 @@ public struct TockSettings: Equatable, Sendable {
             self.volume = Self.defaultVolume
         }
         self.releaseSoundEnabled = releaseSoundEnabled ?? true
+        self.scrollSoundEnabled = scrollSoundEnabled ?? false
     }
 }

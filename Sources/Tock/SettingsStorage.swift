@@ -7,6 +7,7 @@ extension TockSettings {
         static let soundID = "soundID"
         static let volume = "volume"
         static let releaseSoundEnabled = "releaseSoundEnabled"
+        static let scrollSoundEnabled = "scrollSoundEnabled"
     }
 
     static func load(from defaults: UserDefaults = .standard) -> TockSettings {
@@ -14,7 +15,8 @@ extension TockSettings {
             enabled: defaults.object(forKey: Key.enabled) as? Bool,
             soundID: defaults.string(forKey: Key.soundID),
             volume: defaults.object(forKey: Key.volume) as? Double,
-            releaseSoundEnabled: defaults.object(forKey: Key.releaseSoundEnabled) as? Bool)
+            releaseSoundEnabled: defaults.object(forKey: Key.releaseSoundEnabled) as? Bool,
+            scrollSoundEnabled: defaults.object(forKey: Key.scrollSoundEnabled) as? Bool)
     }
 
     func save(to defaults: UserDefaults = .standard) {
@@ -22,5 +24,6 @@ extension TockSettings {
         defaults.set(soundID, forKey: Key.soundID)
         defaults.set(volume, forKey: Key.volume)
         defaults.set(releaseSoundEnabled, forKey: Key.releaseSoundEnabled)
+        defaults.set(scrollSoundEnabled, forKey: Key.scrollSoundEnabled)
     }
 }

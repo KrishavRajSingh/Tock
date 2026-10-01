@@ -23,6 +23,7 @@ final class AudioPlayer {
     private var loadGeneration = 0
     private var pressBuffers: [AVAudioPCMBuffer] = []
     private var releaseBuffers: [AVAudioPCMBuffer] = []
+    private var scrollBuffers: [AVAudioPCMBuffer] = []
     private var observer: NSObjectProtocol?
 
     init() {
@@ -71,17 +72,26 @@ final class AudioPlayer {
         renderQueue.async {
             let press = Self.buffers(for: sound.press, format: format)
             let release = Self.buffers(for: sound.release, format: format)
+            let scroll = Self.buffers(for: sound.scroll, format: format)
             DispatchQueue.main.async { [weak self] in
                 guard let self, generation == self.loadGeneration else { return }
                 self.pressBuffers = press
                 self.releaseBuffers = release
+                self.scrollBuffers = scroll
                 completion?()
             }
         }
     }
 
     func play(_ phase: ClickPhase) {
-        let buffers = phase == .press ? pressBuffers : releaseBuffers
+        play(oneOf: phase == .press ? pressBuffers : releaseBuffers)
+    }
+
+    func playScrollTick() {
+        play(oneOf: scrollBuffers)
+    }
+
+    private func play(oneOf buffers: [AVAudioPCMBuffer]) {
         guard engine.isRunning, let buffer = buffers.randomElement() else { return }
         let voice = voices[nextVoice]
         nextVoice = (nextVoice + 1) % voices.count

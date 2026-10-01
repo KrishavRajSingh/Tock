@@ -10,14 +10,16 @@ public struct Sound: Identifiable, Equatable, Sendable {
     public let family: SoundFamily
     public let press: SoundRecipe
     public let release: SoundRecipe
+    public let scroll: SoundRecipe
 
-    /// A sound whose release is derived from its press.
+    /// A sound whose release and scroll tick are derived from its press.
     init(id: String, name: String, family: SoundFamily, press: SoundRecipe) {
         self.id = id
         self.name = name
         self.family = family
         self.press = press
         self.release = SoundLibrary.release(of: press)
+        self.scroll = SoundLibrary.scroll(of: press)
     }
 }
 
@@ -38,13 +40,23 @@ public enum SoundLibrary {
 
     /// The release counterpart of a press: shorter, quieter and a little higher.
     public static func release(of press: SoundRecipe) -> SoundRecipe {
-        let time = 0.6
-        let pitch = 1.2
-        var release = press
-        release.duration = press.duration * time
-        release.gain = press.gain * 0.5
-        release.seed = press.seed &+ 1000
-        release.layers = press.layers.map { layer in
+        variant(of: press, time: 0.6, pitch: 1.2, gain: 0.5, seedOffset: 1000)
+    }
+
+    /// The scroll tick of a press: much shorter, much quieter and higher.
+    public static func scroll(of press: SoundRecipe) -> SoundRecipe {
+        variant(of: press, time: 0.35, pitch: 1.5, gain: 0.3, seedOffset: 2000)
+    }
+
+    /// `press` with its timing, pitch and level scaled.
+    private static func variant(
+        of press: SoundRecipe, time: Double, pitch: Double, gain: Double, seedOffset: UInt64
+    ) -> SoundRecipe {
+        var variant = press
+        variant.duration = press.duration * time
+        variant.gain = press.gain * gain
+        variant.seed = press.seed &+ seedOffset
+        variant.layers = press.layers.map { layer in
             var layer = layer
             layer.source = layer.source.scaled(by: pitch)
             layer.envelope.decay *= time
@@ -52,7 +64,7 @@ public enum SoundLibrary {
             layer.filter?.frequency *= pitch
             return layer
         }
-        return release
+        return variant
     }
 
     public static let sounds: [Sound] = [

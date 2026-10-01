@@ -36,6 +36,7 @@ struct MenuPanel: View {
             .accessibilityLabel("Volume")
 
             Toggle("Sound on release", isOn: $model.settings.releaseSoundEnabled)
+            Toggle("Sound on scroll", isOn: $model.settings.scrollSoundEnabled)
             Toggle(
                 "Launch at login",
                 isOn: Binding(get: { model.launchAtLogin }, set: { model.setLaunchAtLogin($0) }))

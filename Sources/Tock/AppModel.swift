@@ -20,6 +20,7 @@ final class AppModel: ObservableObject {
 
     private let monitor = ClickMonitor()
     private let player = AudioPlayer()
+    private var scrollTicker = ScrollTicker()
 
     init() {
         settings = TockSettings.load()
@@ -31,6 +32,9 @@ final class AppModel: ObservableObject {
         }
         monitor.handler = { [weak self] _, phase in
             self?.handleClick(phase)
+        }
+        monitor.scrollHandler = { [weak self] distance, precise in
+            self?.handleScroll(distance: distance, precise: precise)
         }
         player.volume = Float(settings.volume)
         player.load(SoundLibrary.sound(id: settings.soundID))
@@ -80,5 +84,13 @@ final class AppModel: ObservableObject {
         guard settings.enabled else { return }
         if phase == .release, !settings.releaseSoundEnabled { return }
         player.play(phase)
+    }
+
+    private func handleScroll(distance: Double, precise: Bool) {
+        guard settings.enabled, settings.scrollSoundEnabled else { return }
+        let now = ProcessInfo.processInfo.systemUptime
+        if scrollTicker.shouldTick(delta: distance, precise: precise, time: now) {
+            player.playScrollTick()
+        }
     }
 }

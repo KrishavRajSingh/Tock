@@ -32,6 +32,14 @@ import Testing
         }
     }
 
+    @Test func scrollTickIsShorterAndQuieterThanRelease() {
+        for sound in SoundLibrary.sounds {
+            #expect(sound.scroll.duration < sound.release.duration, "\(sound.id)")
+            #expect(sound.scroll.gain < sound.release.gain, "\(sound.id)")
+            #expect(!sound.scroll.layers.isEmpty, "\(sound.id)")
+        }
+    }
+
     @Test func fivePitchVariantsWithinThreePercent() {
         #expect(SoundLibrary.pitchVariants.count == 5)
         #expect(SoundLibrary.pitchVariants.contains(1.0))
@@ -46,7 +54,7 @@ import Testing
 
     @Test func everyRenderIsSafeAndAudible() {
         for sound in SoundLibrary.sounds {
-            for (phase, recipe) in [("press", sound.press), ("release", sound.release)] {
+            for (phase, recipe) in [("press", sound.press), ("release", sound.release), ("scroll", sound.scroll)] {
                 for shift in SoundLibrary.pitchVariants {
                     let samples = Synth.render(recipe, pitchShift: shift)
                     let label = "\(sound.id) \(phase) ×\(shift)"

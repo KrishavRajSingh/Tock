@@ -8,6 +8,11 @@ import Testing
         #expect(settings.soundID == SoundLibrary.sounds(in: .desk)[0].id)
         #expect(settings.volume == 0.6)
         #expect(settings.releaseSoundEnabled)
+        #expect(!settings.scrollSoundEnabled)
+    }
+
+    @Test func storedScrollSettingIsKept() {
+        #expect(TockSettings(scrollSoundEnabled: true).scrollSoundEnabled)
     }
 
     @Test func storedValuesAreKept() {

@@ -1,10 +1,11 @@
 # Tock
 
-Tock is a macOS menu-bar app that plays a sound every time you click the mouse.
+Tock is a macOS menu-bar app that plays a sound every time you click the mouse,
+and optionally a soft tick as you scroll.
 The sounds are synthesized in code: 12 of them, in three families (Desk, Analog,
 Toybox). It is free and open source.
 
-Tock listens only for mouse button presses. It never reads keystrokes, and it
+Tock listens only for mouse buttons and scrolling. It never reads keystrokes, and it
 needs no special permission.
 
 ## Requirements

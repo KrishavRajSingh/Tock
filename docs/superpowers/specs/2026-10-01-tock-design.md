@@ -25,6 +25,8 @@ character. Click capture and playback are commodity; an existing free tool
 In v1:
 
 - Sound on left, right and middle mouse button press and release.
+- Optional sound on scroll (off by default): one tick per wheel notch, or per
+  40 points of trackpad travel, at most one tick every 30 ms.
 - 12 synthesized sounds in 3 families.
 - Menu-bar UI to enable/disable, pick a sound, set volume.
 - First-launch welcome window; no permission is needed for mouse buttons.
@@ -34,7 +36,7 @@ Out of v1:
 
 - Click ripples or any other visual overlay.
 - Screen recorder, webcam bubble, vertical clips.
-- Scroll sounds and keyboard sounds.
+- Keyboard sounds.
 - User-supplied sound files.
 - Click statistics, desktop pet.
 - Payments, licence keys, auto-update.
@@ -107,6 +109,7 @@ Stored in `UserDefaults`:
 - `soundID` (default: first sound in Desk)
 - `volume` 0...1 (default 0.6)
 - `releaseSoundEnabled` (default on)
+- `scrollSoundEnabled` (default off)
 
 Launch at login is read from and written to `SMAppService.mainApp`, not stored
 separately, so the setting cannot drift from the system's state.
