@@ -17,6 +17,10 @@
     --walnut: #8C5A3A;   /* Desk family */
     --teal: #1E7C82;     /* Analog family */
     --yolk: #D9960A;     /* Toybox family */
+    --slate: #3D4A5C;    /* Mechanical family */
+    --plum: #7A3E8E;     /* Custom family */
+    --brick: #A63D2F;    /* Vintage family */
+    --moss: #4E7A46;     /* Quiet family */
     --signal: #2B4BE0;   /* the one thing to press */
     --signal-deep: #1A2F9C;
     --travel: 6px;       /* how far a key goes down */
@@ -62,7 +66,7 @@
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: 3.5rem;
-    align-items: center;
+    align-items: start;
     padding: 3rem 0 5rem;
   }
 
@@ -96,7 +100,7 @@
     font: inherit;
     font-weight: 600;
     text-align: left;
-    padding: 1rem 1rem 2.25rem;
+    padding: 0.875rem 0.75rem 1.5rem;
     box-shadow: 0 var(--travel) 0 var(--base, var(--soft));
     cursor: pointer;
     touch-action: manipulation;
@@ -126,18 +130,18 @@
   }
 
   /* The board */
-  .board { display: grid; gap: 1.5rem; }
+  .board { display: grid; gap: 1.125rem; }
   .board p { margin: 0; color: var(--soft); font-size: 1rem; }
 
   .row {
     display: grid;
-    grid-template-columns: 4.5rem repeat(4, minmax(0, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.375rem 0.75rem;
     align-items: start;
   }
   .row h2 {
+    grid-column: 1 / -1;
     margin: 0;
-    padding-top: 1rem;
     font-size: 1rem;
     font-weight: 700;
     color: var(--base);
@@ -145,6 +149,10 @@
   .desk { --base: var(--walnut); }
   .analog { --base: var(--teal); }
   .toybox { --base: var(--yolk); }
+  .mechanical { --base: var(--slate); }
+  .custom { --base: var(--plum); }
+  .vintage { --base: var(--brick); }
+  .quiet { --base: var(--moss); }
 
   /* Below the hero */
   .rest {
@@ -196,9 +204,11 @@
   @media (max-width: 54rem) {
     .hero, .rest { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
     .hero { padding-top: 1.5rem; }
-    .row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .row h2 { grid-column: 1 / -1; padding-top: 0; }
-    .key { padding: 0.75rem 0.5rem 1.75rem; font-size: 0.9375rem; }
+    .key { padding: 0.75rem 0.5rem 1.5rem; font-size: 0.9375rem; }
+  }
+
+  @media (max-width: 30rem) {
+    .row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 0.75rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -218,7 +228,7 @@
     <section class="hero">
       <div>
         <h1>Your Mac goes tock.</h1>
-        <p class="lede">A small sound on every click. On scroll and key press too, if you want. Twelve sounds to pick from.</p>
+        <p class="lede">A small sound on every click. On scroll and key press too, if you want. 28 sounds to pick from, from desk taps to mechanical keyboards.</p>
         <a class="key download" href="https://github.com/KrishavRajSingh/tock/releases/latest/download/Tock.dmg">Download for Mac</a>
         <p class="fine">Free and open source. macOS 13 or later. Under 1 MB.</p>
       </div>
@@ -236,7 +246,7 @@
           <li>Drag Tock onto the Applications folder.</li>
           <li>Open Tock from Applications. macOS refuses the first time, because Tock isn't signed with a paid Apple certificate. Choose Done.</li>
           <li>Open System Settings, go to Privacy &amp; Security, scroll down and choose Open Anyway. You only do this once.</li>
-          <li>Click the cursor icon in the menu bar and pick a sound.</li>
+          <li>Pick a sound in the window that opens. Close it and Tock keeps running in the menu bar.</li>
         </ol>
       </div>
 
@@ -278,6 +288,30 @@ const families = [
     { name: "Switch", duration: 0.06, gain: 0.75, layers: [noise(0.7, 0.003, high(3000)), sine(2400, 0.35, 0.006), sine(320, 0.6, 0.012, { pitchEnd: 0.8 })] },
     { name: "Wood", duration: 0.09, gain: 0.8, layers: [tri(520, 1, 0.02, { pitchEnd: 0.85 }), noise(0.4, 0.008, band(900, 4))] },
     { name: "Pen", duration: 0.06, gain: 0.7, layers: [noise(0.8, 0.004, band(4200, 6)), noise(0.6, 0.004, band(5200, 6), { delay: 0.018 }), sine(700, 0.3, 0.01)] },
+  ] },
+  { name: "Mechanical", cls: "mechanical", sounds: [
+    { name: "Blue", duration: 0.07, gain: 0.7, layers: [noise(2, 0.0012, high(6000)), sine(3400, 0.8, 0.002), noise(2.5, 0.0025, band(2800, 1.5), { delay: 0.011 }), sine(1500, 0.12, 0.003, { delay: 0.011 }), sine(300, 0.06, 0.008, { pitchEnd: 0.85, delay: 0.011 })] },
+    { name: "Brown", duration: 0.07, gain: 0.75, layers: [noise(0.5, 0.0015, band(3500, 2)), noise(2.5, 0.0025, band(2200, 1.5), { delay: 0.006 }), sine(1900, 0.3, 0.003, { delay: 0.006 }), sine(260, 0.1, 0.008, { pitchEnd: 0.8, delay: 0.006 })] },
+    { name: "Red", duration: 0.07, gain: 0.7, layers: [noise(3, 0.004, band(1300, 1.5)), sine(1250, 0.5, 0.004), noise(0.8, 0.003, band(1800, 2), { delay: 0.005 }), sine(280, 0.08, 0.008, { pitchEnd: 0.8 })] },
+    { name: "Thock", duration: 0.09, gain: 0.85, layers: [sine(120, 0.08, 0.012, { pitchEnd: 0.85 }), noise(4, 0.005, band(600, 1.5)), noise(2.5, 0.0025, band(2000, 1))] },
+  ] },
+  { name: "Custom", cls: "custom", sounds: [
+    { name: "Black", duration: 0.07, gain: 0.75, layers: [noise(3.5, 0.003, band(2600, 1.5)), sine(1900, 0.5, 0.003), sine(240, 0.03, 0.008, { pitchEnd: 0.8 })] },
+    { name: "Jade", duration: 0.07, gain: 0.75, layers: [noise(2, 0.001, high(5000)), sine(4200, 0.9, 0.0018), sine(2700, 0.5, 0.0025), noise(2.5, 0.0025, band(2400, 1.5), { delay: 0.008 }), sine(320, 0.06, 0.008, { delay: 0.008 })] },
+    { name: "Panda", duration: 0.07, gain: 0.75, layers: [noise(3, 0.0025, band(2500, 2)), sine(2300, 0.7, 0.003), noise(1.2, 0.002, band(1700, 1.5), { delay: 0.004 }), sine(220, 0.04, 0.008)] },
+    { name: "Cream", duration: 0.08, gain: 0.75, layers: [noise(0.4, 0.001, band(3500, 1), { attack: 0.006 }), noise(3.5, 0.003, band(1300, 2.5), { delay: 0.008 }), noise(1.8, 0.002, band(2700, 1.5), { delay: 0.008 }), sine(1270, 0.4, 0.003, { delay: 0.008 }), sine(200, 0.06, 0.008, { delay: 0.008 })] },
+  ] },
+  { name: "Vintage", cls: "vintage", sounds: [
+    { name: "Spring", duration: 0.12, gain: 0.75, layers: [noise(3, 0.004, band(2500, 1)), sine(2950, 0.12, 0.018), sine(4400, 0.08, 0.012), noise(3.5, 0.006, band(900, 1.5)), sine(450, 0.1, 0.012), sine(170, 0.08, 0.012)] },
+    { name: "Alps", duration: 0.07, gain: 0.7, layers: [noise(4, 0.002, band(3200, 2)), sine(3100, 0.4, 0.0025), tri(1100, 0.1, 0.006), noise(1, 0.003, band(1100, 3))] },
+    { name: "Typewriter", duration: 0.1, gain: 0.85, layers: [sine(105, 0.2, 0.012, { pitchEnd: 0.8 }), noise(5, 0.008, band(300, 2.5)), noise(4, 0.002, high(6000)), sine(2200, 0.2, 0.004)] },
+    { name: "Teletype", duration: 0.15, gain: 0.8, layers: [noise(4.5, 0.012, band(660, 1.5)), noise(0.8, 0.015, high(5000)), sine(120, 0.2, 0.02), noise(1.5, 0.006, band(2800, 1), { delay: 0.02 })] },
+  ] },
+  { name: "Quiet", cls: "quiet", sounds: [
+    { name: "Topre", duration: 0.09, gain: 0.7, layers: [noise(4, 0.006, band(600, 1.5)), sine(590, 0.25, 0.008, { pitchEnd: 0.9 }), noise(3, 0.004, band(1400, 1.5)), sine(150, 0.05, 0.01)] },
+    { name: "Silent", duration: 0.06, gain: 0.55, layers: [noise(4, 0.003, low(700)), sine(180, 0.1, 0.006, { pitchEnd: 0.8 }), noise(2, 0.002, band(900, 1))] },
+    { name: "Laptop", duration: 0.05, gain: 0.5, layers: [noise(2.5, 0.0015, band(2600, 1.2)), noise(2, 0.003, band(900, 1.5)), sine(200, 0.03, 0.005)] },
+    { name: "Membrane", duration: 0.09, gain: 0.65, layers: [noise(4, 0.006, band(340, 2)), noise(4, 0.005, band(700, 2.5), { delay: 0.006 }), sine(140, 0.15, 0.012)] },
   ] },
   { name: "Analog", cls: "analog", sounds: [
     { name: "Blip", duration: 0.09, gain: 0.6, layers: [sine(880, 1, 0.025)] },
