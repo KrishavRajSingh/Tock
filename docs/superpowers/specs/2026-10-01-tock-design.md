@@ -1,7 +1,7 @@
 # Tock — design spec
 
 Date: 2026-10-01
-Status: awaiting review
+Status: approved
 
 ## Purpose
 
@@ -27,7 +27,7 @@ In v1:
 - Sound on left, right and middle mouse button press and release.
 - 12 synthesized sounds in 3 families.
 - Menu-bar UI to enable/disable, pick a sound, set volume.
-- Onboarding for the Input Monitoring permission.
+- First-launch welcome window; no permission is needed for mouse buttons.
 - Launch at login.
 
 Out of v1:
@@ -175,16 +175,23 @@ wrong; recipe numbers are adjusted and the files re-rendered. The automated
 tests guard against technical faults (clipping, pops) but cannot judge whether
 a sound is pleasant.
 
-## Open question — settled by a spike before other work
+## Click capture — settled by spike
 
-Does listening for mouse button events system-wide require the Input
-Monitoring permission on current macOS, and does it differ between `NSEvent`
-global monitors and a listen-only `CGEventTap`?
+Question: does listening for mouse button events system-wide need the Input
+Monitoring permission, and does it differ between an `NSEvent` global monitor
+and a listen-only `CGEventTap`?
 
-Clacky asks for Input Monitoring, which suggests it is required. The first
-implementation step is a throwaway program of about 30 lines that tries both
-APIs and reports what macOS prompts for. The result fixes the `ClickMonitor`
-API choice and the onboarding wording. The spike code is not kept.
+Result (macOS 26.3.1, arm64): a throwaway app bundle with a fresh bundle ID
+and no permissions was launched with `open`. `CGPreflightListenEventAccess()`
+returned `false`. The `NSEvent` global monitor received every mouse button
+event (15 of 15). The listen-only `CGEventTap` was created but stayed disabled
+and received none.
+
+Decision: `ClickMonitor` uses `NSEvent.addGlobalMonitorForEvents`. No
+permission is needed for mouse buttons, so onboarding is a first-launch
+welcome window. The "Permission needed" row and the System Settings button
+remain only for the case where the monitor cannot be installed. Not verified
+on macOS 13–15. The spike code was not kept.
 
 ## Known limitations
 
