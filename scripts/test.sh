@@ -1,6 +1,8 @@
 #!/bin/bash
 # Runs the test suite. With Command Line Tools only (no Xcode), Swift Testing
-# is installed but not on the default search path, so add it.
+# is installed but not on the default search path, so add it. The Command Line
+# Tools also ship the Testing/Foundation overlay without its module, so tests
+# that import both need cross-import overlays turned off.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -10,6 +12,7 @@ if [[ "$(xcode-select -p)" == /Library/Developer/CommandLineTools* && -d "$frame
         -Xswiftc -F -Xswiftc "$frameworks" \
         -Xlinker -F -Xlinker "$frameworks" \
         -Xlinker -rpath -Xlinker "$frameworks" \
+        -Xswiftc -Xfrontend -Xswiftc -disable-cross-import-overlays \
         "$@"
 fi
 exec swift test "$@"
